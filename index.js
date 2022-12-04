@@ -70,7 +70,6 @@ const sites = [
         address: 'https://www.thesun.co.uk/news/',
         base: ''
     }
- 
 ]
 
 const news = []
@@ -103,6 +102,33 @@ app.get('/', (req, res) => {
 
 app.get('/news', (req, res) => {
     res.json(news)
+})
+
+app.get('news/:siteId', (req, res) => {
+    const siteId = req.params.siteId
+    const siteAdress = sites.filter(site => site.name == siteId)[0].address
+    const siteBase = sites.filter(site => site.name == siteId)[0].base
+
+    axios.get(sitesAddress)
+            .then(response => {
+                const html = response.data
+                const $ = cheerio.load(html)
+                const specificSite = []
+
+                $('a', html).each(function () {
+                    
+                if  ( ((($(this).attr('href'))?.includes('news')) == true) || ((($(this).attr('href'))?.includes('world')) == true)   )  {
+                    const title = $(this).text()
+                    const url = $(this).attr('href')
+                    specificSite.push({
+                        title,
+                        url: siteBase + url,
+                        source: siteId
+                    })
+                }
+            })
+               res.json(specificSite)
+            }).catch(err => console.log(err))
 })
 
 
