@@ -12,9 +12,9 @@ const sites = [
     },
     {
         name: 'nbcnews',
-         address: 'https://www.nbcnews.com/world',
+        address: 'https://www.nbcnews.com/world',
         base: ''
-    }, 
+    },
     {
         name: 'cnn',
         address: 'https://edition.cnn.com/world',
@@ -22,7 +22,7 @@ const sites = [
     },
     {
         name: 'nbcnews',
-         address: 'https://www.nbcnews.com/world',
+        address: 'https://www.nbcnews.com/world',
         base: ''
     },
     {
@@ -32,7 +32,7 @@ const sites = [
     },
     {
         name: 'theguardian',
-         address: 'https://www.theguardian.com/international',
+        address: 'https://www.theguardian.com/international',
         base: ''
     },
     {
@@ -41,7 +41,7 @@ const sites = [
         base: ''
     },
     {
-        name:'latime',
+        name: 'latime',
         address: 'https://www.latimes.com/world-nation',
         base: ''
     },
@@ -80,44 +80,41 @@ sites.forEach(site => {
             const html = response.data
             const $ = cheerio.load(html)
 
-            $('a', html).each(function ( ) {
-                if  ( ((($(this).attr('href'))?.includes('news')) == true) || ((($(this).attr('href'))?.includes('world')) == true)   )  {
-                  const title = $(this).text()
-                  const url = $(this).attr('href')
-                  
-                  news.push({
-                      title,
-                      url: site.base + url,
-                      source: site.name
-                  })
+            $('a', html).each(function() {
+                if (((($(this).attr('href'))?.includes('news')) == true) || ((($(this).attr('href'))?.includes('world')) == true)) {
+                    const title = $(this).text()
+                    const url = $(this).attr('href')
+
+                    news.push({
+                        title,
+                        url: site.base + url,
+                        source: site.name
+                    })
                 }
             })
         })
 })
 
 
-app.get('/', (req, res) => {
-    res.json('Hello')
-})
 
-app.get('/news', (req, res) => {
+app.get('/', (req, res) => {
     res.json(news)
 })
 
-app.get('news/:siteId', (req, res) => {
+app.get('/:siteId', (req, res) => {
     const siteId = req.params.siteId
-    const siteAdress = sites.filter(site => site.name == siteId)[0].address
-    const siteBase = sites.filter(site => site.name == siteId)[0].base
+    const siteAdress = sites.filter(site => site.name == siteId).address
+    const siteBase = sites.filter(site => site.source == siteId).base
 
-    axios.get(sitesAddress)
-            .then(response => {
-                const html = response.data
-                const $ = cheerio.load(html)
-                const specificSite = []
+    axios.get(siteAdress)
+        .then(response => {
+            const html = response.data
+            const $ = cheerio.load(html)
+            const specificSite = []
 
-                $('a', html).each(function () {
-                    
-                if  ( ((($(this).attr('href'))?.includes('news')) == true) || ((($(this).attr('href'))?.includes('world')) == true)   )  {
+            $('a', html).each(function() {
+
+                if (((($(this).attr('href'))?.includes('news')) == true) || ((($(this).attr('href'))?.includes('world')) == true)) {
                     const title = $(this).text()
                     const url = $(this).attr('href')
                     specificSite.push({
@@ -127,11 +124,11 @@ app.get('news/:siteId', (req, res) => {
                     })
                 }
             })
-               res.json(specificSite)
-            }).catch(err => console.log(err))
+            res.json(specificSite)
+        }).catch(err => console.log(err))
 })
 
 
 app.listen(port, () => {
-    console.log('go to 127.0.0.1:8000');
+    console.log('go to http://127.0.0.1:8000');
 })
